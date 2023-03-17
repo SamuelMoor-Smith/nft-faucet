@@ -1,23 +1,42 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NETWORK_ID } from '../helpers/constant.helpers'
 
 import { Button, Text, LoadingDots } from '@vercel/examples-ui'
-import { useChain } from 'react-moralis'
+import { MintProps, MintState } from './Mint'
 
-export const SwitchNetwork: React.VFC = () => {
+export const SwitchNetwork: React.VFC<MintProps> = ({ state, setState }) => {
   const [loading, setLoading] = useState(false)
 
-  const { switchNetwork, chainId } = useChain()
+  useEffect(() => {
+    if (window.ethereum) {
+      const ethereum = window.ethereum
+
+      const handleChainChanged = async (...args: unknown[]) => {
+        if (args[0] === NETWORK_ID) {
+          setState(MintState.Upload)
+        }
+      }
+
+      ethereum.on('chainChanged', handleChainChanged)
+    }
+  }, [])
 
   const handleSwitchNetwork = async () => {
     setLoading(true)
     try {
-      if (typeof chainId !== 'undefined') {
-        await switchNetwork(NETWORK_ID)
-        setLoading(false)
+      if (window.ethereum) {
+        const chainId = window.ethereum.chainId;
+        if (chainId !== NETWORK_ID) {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: NETWORK_ID }],
+          });
+        }
       }
     } catch (error) {
       console.error(error)
+    } finally {
+      setLoading(false)
     }
   }
 

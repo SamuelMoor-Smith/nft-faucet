@@ -1,10 +1,13 @@
 import type { AppProps } from 'next/app'
 import type { LayoutProps } from '@vercel/examples-ui/layout'
-import { MoralisProvider } from 'react-moralis'
+import Home from '.'
 
 import { getLayout } from '@vercel/examples-ui'
 
 import '@vercel/examples-ui/globals.css'
+
+import Web3 from 'web3';
+export const web3 = new Web3(Web3.givenProvider);
 
 function App({ Component, pageProps }: AppProps) {
   const Layout = getLayout<LayoutProps>(Component)
@@ -15,13 +18,7 @@ function App({ Component, pageProps }: AppProps) {
       path="solutions/mint-nft"
       description="How to mint an NFT"
     >
-      <MoralisProvider
-        appId={process.env.NEXT_PUBLIC_APP_ID!}
-        serverUrl={process.env.NEXT_PUBLIC_SERVER_URL!}
-        initializeOnMount
-      >
-        <Component {...pageProps} />
-      </MoralisProvider>
+      <Home/>
     </Layout>
   )
 }

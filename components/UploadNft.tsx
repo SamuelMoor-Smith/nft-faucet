@@ -1,46 +1,54 @@
 import { useState } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { isImageSafe } from '../helpers/sanitize.helpers'
 
-import { Button, Text, LoadingDots } from '@vercel/examples-ui'
-import Moralis from 'moralis-v1'
+import { Button, Text, Input } from '@vercel/examples-ui'
 
-type Props = {
-  onDone: (asset: Moralis.File) => void
-}
+import contractABI from '../helpers/contractABI.json';
+import { contractAddr } from '../helpers/constant.helpers'
+import { web3 } from '../pages/_app'
 
-export const UploadNft: React.VFC<Props> = ({ onDone }) => {
+import Modal from 'react-bootstrap/Modal';
+import { MintProps } from './Mint'
+
+export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
+
+  const [show, setShow] = useState(false);
+
+  const handleOpen = () => setShow(true);
+  const handleClose = () => setShow(false);
+
+  const [numTokens, setNumTokens] = useState(0);
+
   const [loading, setLoading] = useState(false)
-  const [imageWarning, setImageWarning] = useState('')
-  const [disabled, setDisabled] = useState(true)
 
-  const onDrop = async (acceptedFiles: File[]) => {
-    try {
-      setLoading(true)
-      setImageWarning('')
+  function confirm() {
 
-      const data = acceptedFiles[0]
-
-      const imageSafety = await isImageSafe(data)
-
-      if (Object.values(imageSafety).some((safe) => !safe)) {
-        setLoading(false)
-        setImageWarning('Please try a different image')
-        return
-      }
-
-      const imageFile = new Moralis.File(data.name, data)
-
-      await imageFile.saveIPFS()
-      setLoading(false)
-      setDisabled(false)
-      onDone(imageFile)
-    } catch (e) {
-      console.error(e)
-    }
+    const requiredETH = numTokens * 10**14;
+    handleOpen()
   }
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop })
+  async function handleMint() {
+
+    const contract = new web3.eth.Contract(contractABI, contractAddr);
+
+    try {
+      // Send the transaction
+      handleClose()
+      setLoading(true)
+      await contract.methods.mintNTokens(numTokens).send({
+        from: await web3.eth.getCoinbase(),
+        value: numTokens * 10**14,
+      });
+
+      // Transaction successful
+      alert(`Successfully minted ${numTokens} tokens!`);
+      setNumTokens(0);
+      setLoading(false)
+
+    } catch (err) {
+      // Transaction failed
+      alert(`Failed to mint tokens: ${err}`);
+    }
+  }
 
   return (
     <div className="flex flex-col">
@@ -48,64 +56,35 @@ export const UploadNft: React.VFC<Props> = ({ onDone }) => {
       <Text className="mt-6">
         This image will be validated and stored on IPFS.
       </Text>
-      <div className="mt-2 ">
-        <div {...getRootProps()} className="mt-6 sm:col-span-2 ">
-          <div className="flex flex-col items-center m justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-            <div className="space-y-1 text-center">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 48 48"
-                aria-hidden="true"
-              >
-                <path
-                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-
-              {loading ? (
-                <div className="h-12">
-                  <LoadingDots />
-                </div>
-              ) : (
-                <>
-                  <div className="flex text-sm items-center text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer bg-white rounded-md font-medium  focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                    >
-                      <Text className="text-bold underline" variant="body">
-                        Upload a file
-                      </Text>
-                      <input
-                        {...getInputProps()}
-                        id="file-upload"
-                        name="file-upload"
-                        type="file"
-                        className="sr-only"
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        {imageWarning.length > 0 && !loading && (
-          <aside
-            role="alert"
-            className="flex w-full justify-center mt-4 text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-red-600"
-          >
-            {imageWarning}
-          </aside>
-        )}
+      <div className="flex py-8">
+        <Input
+          placeholder="How many tokens to mint?"
+          onChange={({ currentTarget: { value } }) => setNumTokens(Number(value))}
+        />
+        <Button
+          variant="black"
+          width="120px"
+          loading={loading}
+          onClick={confirm}
+        >
+          Mint ERC721
+        </Button>
       </div>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Transaction Confirmation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>This transaction will cost {10**14 * numTokens} Wei. Would you like to proceed?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            No
+          </Button>
+          <Button variant="primary" onClick={handleMint}>
+            Yes, let me mint
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }
+
