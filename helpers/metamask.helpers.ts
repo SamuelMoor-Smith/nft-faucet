@@ -106,6 +106,6 @@ export async function handleMint(numTokens: any, setNumTokens: any) {
 
     } catch (err) {
       // Transaction failed
-      alert(`Failed to mint tokens`);
+      alert(`Not enough ETH to mint tokens`);
     }
   }
