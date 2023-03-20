@@ -18,8 +18,11 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
   const [loading, setLoading] = useState(false)
 
   function confirm() {
-    const requiredETH = numTokens * 10**14;
-    handleOpen()
+    if (Number.isInteger(numTokens)) {
+      handleOpen()
+    } else {
+      alert("Must add integer value for number of tokens")
+    }
   }
 
   return (
