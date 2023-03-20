@@ -91,7 +91,7 @@ export const decideState = async (state: MintState, setState: any) => {
 
 export async function handleMint(numTokens: any, setNumTokens: any) {
 
-    const contract = new web3.eth.Contract((contractABI as AbiItem), contractAddr);
+    const contract = new web3.eth.Contract((contractABI as AbiItem[]), contractAddr);
 
     try {
       // Send the transaction
