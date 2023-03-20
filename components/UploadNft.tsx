@@ -25,7 +25,7 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
   return (
     <div className="flex flex-col">
       <Text className="mt-6">
-        You will now be able to mint ERC721 Tokens for the Goerli test net. Each mint will be charge in wei from your ethereum test net account. (This will be confirmed before minting). {' '}
+        You will now be able to mint ERC721 Tokens for the Goerli test net. Each mint will be charge in ETH (0.0001 ETH per token). (This will be confirmed before minting). {' '}
             <span className="underline italic">
               This process might take up to 1 minute to complete
             </span>
@@ -48,7 +48,7 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
         <Modal.Header closeButton>
           <Modal.Title>Transaction Confirmation</Modal.Title>
         </Modal.Header>
-        <Modal.Body>This transaction will cost {10**14 * numTokens} wei. Would you like to proceed?</Modal.Body>
+        <Modal.Body>This transaction will cost {0.0001 * numTokens} ETH. Would you like to proceed?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             No
