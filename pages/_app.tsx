@@ -13,13 +13,7 @@ function App({ Component, pageProps }: AppProps) {
   const Layout = getLayout<LayoutProps>(Component)
 
   return (
-    <Layout
-      title="mint-nft"
-      path="solutions/mint-nft"
-      description="How to mint an NFT"
-    >
-      <Home/>
-    </Layout>
+    <Home/>
   )
 }
 

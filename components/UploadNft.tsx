@@ -52,9 +52,11 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
 
   return (
     <div className="flex flex-col">
-      <Text variant="h2">Select the image you want to mint as an NFT</Text>
       <Text className="mt-6">
-        This image will be validated and stored on IPFS.
+        You will now be able to mint ERC721 Tokens for the Goerli test net. Each mint will be charge in wei from your ethereum test net account. (This will be confirmed before minting). {' '}
+            <span className="underline italic">
+              This process might take up to 1 minute to complete
+            </span>
       </Text>
       <div className="flex py-8">
         <Input

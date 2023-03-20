@@ -1,7 +1,7 @@
 import { Layout, Text, Page, Code, Link } from '@vercel/examples-ui'
 import { Mint } from '../components/Mint'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { MintState } from '../components/Mint'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
