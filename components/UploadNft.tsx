@@ -2,12 +2,9 @@ import { useState } from 'react'
 
 import { Button, Text, Input } from '@vercel/examples-ui'
 
-import contractABI from '../helpers/contractABI.json';
-import { contractAddr } from '../helpers/constant.helpers'
-import { web3 } from '../pages/_app'
-
 import Modal from 'react-bootstrap/Modal';
 import { MintProps } from './Mint'
+import { handleMint } from '../helpers/metamask.helpers';
 
 export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
 
@@ -21,33 +18,8 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
   const [loading, setLoading] = useState(false)
 
   function confirm() {
-
     const requiredETH = numTokens * 10**14;
     handleOpen()
-  }
-
-  async function handleMint() {
-
-    const contract = new web3.eth.Contract(contractABI, contractAddr);
-
-    try {
-      // Send the transaction
-      handleClose()
-      setLoading(true)
-      await contract.methods.mintNTokens(numTokens).send({
-        from: await web3.eth.getCoinbase(),
-        value: numTokens * 10**14,
-      });
-
-      // Transaction successful
-      alert(`Successfully minted ${numTokens} tokens!`);
-      setNumTokens(0);
-      setLoading(false)
-
-    } catch (err) {
-      // Transaction failed
-      alert(`Failed to mint tokens: ${err}`);
-    }
   }
 
   return (
@@ -76,12 +48,17 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
         <Modal.Header closeButton>
           <Modal.Title>Transaction Confirmation</Modal.Title>
         </Modal.Header>
-        <Modal.Body>This transaction will cost {10**14 * numTokens} Wei. Would you like to proceed?</Modal.Body>
+        <Modal.Body>This transaction will cost {10**14 * numTokens} wei. Would you like to proceed?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             No
           </Button>
-          <Button variant="primary" onClick={handleMint}>
+          <Button variant="primary" onClick={async () => {
+            handleClose()
+            setLoading(true)
+            await handleMint(numTokens, setNumTokens)
+            setLoading(false)
+          }}>
             Yes, let me mint
           </Button>
         </Modal.Footer>

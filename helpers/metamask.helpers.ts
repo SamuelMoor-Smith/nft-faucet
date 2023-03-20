@@ -1,8 +1,9 @@
 import { NETWORK_ID } from './constant.helpers'
-import { web3 } from '../pages/_app'
 import { MintState } from '../components/Mint';
 import { MetaMaskInpageProvider } from '@metamask/providers';
-import { setLazyProp } from 'next/dist/server/api-utils';
+import { web3 } from '../pages/_app'
+import contractABI from './contractABI.json';
+import { contractAddr } from './constant.helpers'
 
 export const checkMetamaskInstalled = () => {
     if (typeof window.ethereum === 'undefined') {
@@ -25,20 +26,6 @@ export const getAccounts = async () => {
     return await window.ethereum!.request({ method: 'eth_requestAccounts' });
 }
 
-// export const temp = () => {
-//     if (window.ethereum) {
-//         const ethereum = window.ethereum
-  
-//         const handleChainChanged = async (...args: unknown[]) => {
-//           if (args[0] === NETWORK_ID) {
-//             setState(MintState.Upload)
-//           }
-//         }
-  
-//         ethereum.on('chainChanged', handleChainChanged)
-//       }
-// }
-
 export const handleSwitchNetwork = async (state: MintState, setState: any, setLoading: any) => {
     try {
         setLoading(true)
@@ -58,7 +45,8 @@ export const handleSwitchNetwork = async (state: MintState, setState: any, setLo
             setState(MintState.Connect)
         }
     } catch (error) {
-        alert(error)
+        setLoading(false)
+        alert("Could not mint the tokens")
     } finally {
         setLoading(false)
     }
@@ -96,6 +84,27 @@ export const decideState = async (state: MintState, setState: any) => {
         }
 
     } catch (error) {
-        alert(error);
+        alert(`Could not load page`);
     }
 };
+
+export async function handleMint(numTokens: any, setNumTokens: any) {
+
+    const contract = new web3.eth.Contract(contractABI, contractAddr);
+
+    try {
+      // Send the transaction
+      await contract.methods.mintNTokens(numTokens).send({
+        from: await web3.eth.getCoinbase(),
+        value: numTokens * 10**14,
+      });
+
+      // Transaction successful
+      alert(`Successfully minted ${numTokens} tokens!`);
+      setNumTokens(0);
+
+    } catch (err) {
+      // Transaction failed
+      alert(`Failed to mint tokens`);
+    }
+  }
