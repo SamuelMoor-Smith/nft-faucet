@@ -2,8 +2,9 @@ import { NETWORK_ID } from './constant.helpers'
 import { MintState } from '../components/Mint';
 import { MetaMaskInpageProvider } from '@metamask/providers';
 import { web3 } from '../pages/_app'
-import contractABI from './contractABI.json';
 import { contractAddr } from './constant.helpers'
+import { AbiItem } from 'web3-utils'
+import contractABI from './contractABI.json';
 
 export const checkMetamaskInstalled = () => {
     if (typeof window.ethereum === 'undefined') {
@@ -90,7 +91,7 @@ export const decideState = async (state: MintState, setState: any) => {
 
 export async function handleMint(numTokens: any, setNumTokens: any) {
 
-    const contract = new web3.eth.Contract(contractABI, contractAddr);
+    const contract = new web3.eth.Contract((contractABI as AbiItem), contractAddr);
 
     try {
       // Send the transaction
