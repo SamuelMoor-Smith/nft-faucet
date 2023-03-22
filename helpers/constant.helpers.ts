@@ -11,4 +11,4 @@ export const ChainLabelMap: Record<SupportedNetworks, string> = {
 
 export const currentChainLabel = ChainLabelMap[NETWORK_ID]
 
-export const contractAddr = '0x605a7c7131EC9EeF3C10f8a9937Fe640A1bEa568';
+export const contractAddr = '0xe7db0c69f359d5c18712ba7674ca4bd32c61bdba';
