@@ -5,6 +5,8 @@ import { Button, Text, Input } from '@vercel/examples-ui'
 import Modal from 'react-bootstrap/Modal';
 import { MintProps } from './Mint'
 import { handleMint } from '../helpers/metamask.helpers';
+import { displayTokenSVG } from '../helpers/token.helpers';
+import SVGDisplay from './SVGDisplay';
 
 export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
 
@@ -14,6 +16,8 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
   const handleClose = () => setShow(false);
 
   const [numTokens, setNumTokens] = useState(0);
+  const [tokenId, setTokenId] = useState<number | null>(null);
+  const [svg, setSvg] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false)
 
@@ -24,6 +28,12 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
       alert("Must add integer value for number of tokens")
     }
   }
+
+  const handleFetchSVG = async () => {
+    const tokenId = 1; // Replace with a valid tokenId
+    const fetchedSvg = await displayTokenSVG(tokenId);
+    setSvg(fetchedSvg);
+  };
 
   return (
     <div className="flex flex-col">
@@ -66,6 +76,28 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <Text className="mt-6">
+        You can also view the svg associated with your ERC721 Tokens below. Simply type in the tokenId and click 'Display SVG' to see your tokens unique SVG image. {' '}
+            <span className="underline italic">
+              This process might take up to 1 minute to complete
+            </span>
+      </Text>
+      <div className="flex py-8">
+        <Input
+          placeholder="Please enter your tokenId"
+          onChange={({ currentTarget: { value } }) => setTokenId(Number(value))}
+        />
+        <Button
+          variant="black"
+          width="120px"
+          loading={loading}
+          onClick={handleFetchSVG}
+        >
+          Display SVG
+        </Button>
+      </div>
+      <SVGDisplay svg={svg} />
     </div>
   )
 }
