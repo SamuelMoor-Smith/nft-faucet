@@ -28,10 +28,10 @@ contract ERC721Faucet is ERC721, Ownable {
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         string memory baseURI = super.tokenURI(tokenId);
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, getSVG(tokenId))) : getSVG(tokenId);
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, _getSVG(tokenId))) : _getSVG(tokenId);
     }
 
-    function getSVG(uint256 tokenId) private pure returns (string memory) {
+    function _getSVG(uint256 tokenId) private pure returns (string memory) {
         bytes32 hash = keccak256(abi.encodePacked(tokenId));
         string memory svg = "<svg width='100' height='100'>";
         uint256 x;
@@ -39,26 +39,27 @@ contract ERC721Faucet is ERC721, Ownable {
         for (uint i = 0; i < 16; i++) {
             x = (i % 4) * 25;
             y = (i / 4) * 25;
+            uint256 squareIndex = uint256(keccak256(abi.encodePacked(hash[i])));
             svg = string(abi.encodePacked(
                 svg,
-                "<rect x='", toString(x), "' y='", toString(y),
-                "' width='25' height='25' fill='", toColor(bytes4(hash[i])), "'/>"
+                "<rect x='", _toString(x), "' y='", _toString(y),
+                "' width='25' height='25' fill='", _toColor(hash, squareIndex), "'/>"
             ));
         }
         svg = string(abi.encodePacked(svg, "</svg>"));
         return svg;
     }
 
-    function toColor(bytes32 hash) private pure returns (string memory) {
-        uint256 red = uint8(hash[0]);
-        uint256 green = uint8(hash[1]);
-        uint256 blue = uint8(hash[2]);
+    function _toColor(bytes32 hash, uint256 squareIndex) private pure returns (string memory) {
+        uint256 red = uint8(hash[squareIndex % 32]);
+        uint256 green = uint8(hash[(squareIndex + 1) % 32]);
+        uint256 blue = uint8(hash[(squareIndex + 2) % 32]);
         return string(abi.encodePacked(
-            "#", toHex(red), toHex(green), toHex(blue)
+            "#", _toHex(red), _toHex(green), _toHex(blue)
         ));
     }
 
-    function toString(uint256 value) private pure returns (string memory) {
+    function _toString(uint256 value) private pure returns (string memory) {
         bytes memory data = new bytes(32);
         for (uint256 i = 0; i < 32; i++) {
             data[i] = bytes1(uint8(48 + uint8((value / (10**(31 - i))) % 10)));
@@ -66,7 +67,7 @@ contract ERC721Faucet is ERC721, Ownable {
         return string(data);
     }
 
-    function toHex(uint256 value) private pure returns (string memory) {
+    function _toHex(uint256 value) private pure returns (string memory) {
         bytes memory data = new bytes(2);
         data[0] = _toChar(uint8(value >> 4 & 0xF));
         data[1] = _toChar(uint8(value & 0xF));
