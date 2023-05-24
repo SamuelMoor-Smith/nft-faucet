@@ -1,12 +1,9 @@
 import { Layout, Text, Page } from '@vercel/examples-ui'
-import { Mint } from '../components/Mint'
+import { Mint, MintProps } from '../components/Mint'
 
-import { useState } from 'react'
-import { MintState } from '../components/Mint'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function Home() {
-  const [state, setState] = useState<MintState>(MintState.Connect)
+export const Home: React.VFC<MintProps> = ({ state, setState }) => {
   return (
     <Page>
       <section className="flex flex-col gap-6">
@@ -24,7 +21,5 @@ function Home() {
     </Page>
   )
 }
-
-Home.Layout = Layout
 
 export default Home

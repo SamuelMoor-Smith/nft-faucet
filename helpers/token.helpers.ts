@@ -4,7 +4,7 @@ import { AbiItem } from 'web3-utils';
 import contractABI from './contractABI.json';
 
 export async function displayTokenSVG(tokenId: Number | null): Promise<string | null> {
-    
+
     if (!tokenId) {
         alert("No tokenId was entered");
         return null;

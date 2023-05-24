@@ -12,7 +12,7 @@ const SVGDisplay: React.FC<SVGDisplayProps> = ({ svg }) => {
   return (
     <div
       dangerouslySetInnerHTML={{ __html: svg }}
-      style={{ width: '100px', height: '100px' }}
+      style={{ width: '100px', height: '100px', marginLeft: 'auto', marginRight: 'auto' }}
     />
   );
 };

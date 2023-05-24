@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button, Text, Input } from '@vercel/examples-ui'
 
@@ -30,7 +30,6 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
   }
 
   const handleFetchSVG = async () => {
-    const tokenId = 1; // Replace with a valid tokenId
     const fetchedSvg = await displayTokenSVG(tokenId);
     setSvg(fetchedSvg);
   };
@@ -78,7 +77,7 @@ export const UploadNft: React.VFC<MintProps> = ({ state, setState }) => {
       </Modal>
 
       <Text className="mt-6">
-        You can also view the svg associated with your ERC721 Tokens below. Simply type in the tokenId and click 'Display SVG' to see your tokens unique SVG image. {' '}
+        You can also view the svg associated with your ERC721 Tokens below. Simply type in the tokenId and click &apos;Display SVG&apos; to see your tokens unique SVG image. {' '}
             <span className="underline italic">
               This process might take up to 1 minute to complete
             </span>
