@@ -1,10 +1,14 @@
-import { Button, Text } from '@vercel/examples-ui'
+import { Button, Text, LoadingDots } from '@vercel/examples-ui'
 import React from 'react';
-import { MintProps } from './Mint';
-import { decideState } from '../helpers/metamask.helpers';
 
-export const ConnectWallet: React.VFC<MintProps> = ({ state, setState}) => {
+import { Web3Button } from '@web3modal/react'
+import { useWeb3Modal } from '@web3modal/react'
+import { WalletButton } from './WalletButton';
+import { ContractProps } from './Web3Page';
 
+export const ConnectWallet: React.VFC<ContractProps> = ({state}) => {
+
+  const { open, close } = useWeb3Modal()
 
   return (
     <div className="flex flex-col ">
@@ -24,11 +28,7 @@ export const ConnectWallet: React.VFC<MintProps> = ({ state, setState}) => {
         <Text>
           If you do not want to install metamask via the link above, we will be soon adding implementations for other web3 providers.
         </Text>
-        <div className="mt-12  flex justify-center">
-          <Button variant="black" size="lg" onClick={() => decideState(state, setState)}>
-            Connect Wallet
-          </Button>
-        </div>
+        <WalletButton state={state}/>
       </div>
     </div>
   )

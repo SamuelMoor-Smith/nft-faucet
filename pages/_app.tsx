@@ -1,31 +1,35 @@
 import type { AppProps } from 'next/app'
 import type { LayoutProps } from '@vercel/examples-ui/layout'
 import Home from '.'
+import { GlobalNav } from '../components/nav/global-nav'
 
 import { getLayout } from '@vercel/examples-ui'
 
 import '@vercel/examples-ui/globals.css'
 
 import Web3 from 'web3';
-import { useEffect, useState } from 'react'
-import { decideState } from '../helpers/metamask.helpers'
-import { MintState } from '../components/Mint'
+import { useState } from 'react'
+import { Web3State } from '../components/Web3Page'
+import { ChakraProvider } from '@chakra-ui/react'
 export const web3 = new Web3(Web3.givenProvider);
 
 function App({ Component, pageProps }: AppProps) {
 
-  const [state, setState] = useState<MintState>(MintState.Connect)
+  const [state, setState] = useState<Web3State>(Web3State.Loading)
 
-  useEffect(() => {
-    const initializeState = async () => {
-      await decideState(state, setState);
-    };
+  // useEffect(() => {
+  //   const initializeState = async () => {
+  //     await decideState(state, setState);
+  //   };
 
-    initializeState();
-  }, [state]);
+  //   initializeState();
+  // }, [state]);
 
   return (
-    <Home state={state} setState={setState}/>
+    <ChakraProvider>
+      <GlobalNav state={state} setState={setState} />
+      <Home state={state} setState={setState}/>
+    </ChakraProvider>
   )
 }
 

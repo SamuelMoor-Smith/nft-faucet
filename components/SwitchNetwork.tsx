@@ -1,27 +1,13 @@
-import { useState, useEffect } from 'react'
-import { handleSwitchNetwork } from '../helpers/metamask.helpers'
+import { Text, Button, LoadingDots } from '@vercel/examples-ui'
+import { useWeb3Modal } from '@web3modal/react'
+import { goerli } from 'wagmi/chains'
+import { ContractProps } from './Web3Page'
+import { WalletButton } from './WalletButton'
+// import { useNetwork, useSwitchNetwork } from 'wagmi'  
 
-import { Button, Text, LoadingDots } from '@vercel/examples-ui'
-import { MintProps, MintState } from './Mint'
-import { NETWORK_ID } from '../helpers/constant.helpers'
+export const SwitchNetwork: React.VFC<ContractProps> = ({state}) => {
 
-export const SwitchNetwork: React.VFC<MintProps> = ({ state, setState }) => {
-
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (window.ethereum) {
-        const ethereum = window.ethereum
-  
-        const handleChainChanged = async (...args: unknown[]) => {
-          if (args[0] === NETWORK_ID) {
-            setState(MintState.Upload)
-          }
-        }
-  
-        ethereum.on('chainChanged', handleChainChanged)
-      }
-  })
+  const { open, close } = useWeb3Modal()
 
   return (
     <div className="flex flex-col">
@@ -31,11 +17,7 @@ export const SwitchNetwork: React.VFC<MintProps> = ({ state, setState }) => {
           This faucet uses the Ethereum test network called Goerli. You must
           set your wallet to use this network before you can mint NFTs.
         </Text>
-        <div className="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
-          <Button onClick={() => handleSwitchNetwork(state, setState, setLoading)} size="lg" variant="black">
-            {loading ? <LoadingDots /> : 'Switch to Goerli'}
-          </Button>
-        </div>
+        <WalletButton state={state}/>
       </div>
     </div>
   )
