@@ -4,7 +4,6 @@ import SVGDisplay from "./SVGDisplay";
 import { ContractProps } from "./Web3Page";
 import ViewNFTModal from "./modals/ViewNFTModal";
 import { useAccount } from "wagmi";
-import clsx from "clsx";
 import { Box, Divider, Flex, Heading, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { TokenTable } from "./TokenTable";
 
