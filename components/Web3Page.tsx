@@ -56,34 +56,43 @@ export const Web3Page: React.VFC<Web3PageProps> = ({ state, setState }) => {
   const [contractManager, setContractManager] =
     useState<ContractManager | null>(null);
 
-  useEffect(() => {
-    if (address && chain && !chain.unsupported && !isDisconnected) {
-      // Wallet is connected and we are on the right network
-      // Initialize ContractManager
-      const cm = new ContractManager(setLoadingTokens);
-      setContractManager(cm); // Save ContractManager instance to state
-    } else if (
-      contractManager &&
-      (isDisconnected || (chain && chain.unsupported))
-    ) {
-      // Wallet is disconnected or we are on the wrong network
-      // Handle the disconnection or wrong network here
-      // For example, you could clear the contractManager state
-      setContractManager(null);
-    }
-  }, [address, isConnecting, isDisconnected, chain, chains]); // This hook will run every time the address, isConnecting, isDisconnected, chain, or chains change
+    useEffect(() => {
+      console.log(contractManager)
+      if (
+        address && 
+        chain && 
+        !chain.unsupported && 
+        !isDisconnected
+      ) {
+        // Wallet is connected and we are on the right network
+        // Initialize ContractManager
+        console.log("creating contract manager", chain)
+        const cm = new ContractManager(setLoadingTokens, chain);
+        setContractManager(cm); // Save ContractManager instance to state
+      } else if (
+        contractManager &&
+        (isDisconnected || (chain && chain.unsupported))
+      ) {
+        // Wallet is disconnected or we are on the wrong network
+        // Handle the disconnection or wrong network here
+        // For example, you could clear the contractManager state
+        setContractManager(null);
+      }
+    }, [address, isConnecting, isDisconnected, chain, chains]); // This hook will run every time the address, isConnecting, isDisconnected, chain, or chains change
+    
 
   useEffect(() => {
+    console.log(address)
     if (address == null || address == undefined) {
       setState(Web3State.WalletNotConnected);
-    } else if (!chain || chain!.unsupported) {
+    } else if (!chain || chain!.unsupported || !contractManager) {
       setState(Web3State.WrongNetwork);
     } else if (address && state == Web3State.ViewNFTs) {
       return;
     } else {
       setState(Web3State.MintNFTs);
     }
-  }, [address, isConnecting, isDisconnected, chain, chains]);
+  }, [address, isConnecting, isDisconnected, chain, chains, contractManager]);
 
   return (
     <WagmiConfig config={wagmiConfig}>

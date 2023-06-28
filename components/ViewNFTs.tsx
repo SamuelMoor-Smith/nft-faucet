@@ -19,12 +19,6 @@ export const ViewNFTs: React.VFC<ContractProps> = ({
   const tabName = ["All Tokens", "My Tokens"];
     const [tabIndex, setTabIndex] = useState(0);
 
-  useEffect(() => {
-    if (tokenId !== null) {
-      handleFetchSVG();
-    }
-  }, [tokenId]); // Fetch the SVG whenever the tokenId changes
-
   const handleFetchSVG = async () => {
     if (contractManager) {
       const fetchedSvg = await contractManager.displayTokenSVG(tokenId);
@@ -32,6 +26,12 @@ export const ViewNFTs: React.VFC<ContractProps> = ({
       setShowModal(true); // Show the modal when SVG is fetched
     }
   };
+
+  useEffect(() => {
+    if (tokenId !== null) {
+      handleFetchSVG();
+    }
+  }, [tokenId]); // Fetch the SVG whenever the tokenId changes
 
   return (
     <>

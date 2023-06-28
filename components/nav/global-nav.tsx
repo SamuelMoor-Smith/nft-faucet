@@ -6,7 +6,6 @@ import { NextLogo } from './next-logo';
 import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/20/solid';
-import clsx from 'clsx';
 import { useState } from 'react';
 import Byline from './byline';
 import { Web3State } from '../Web3Page';
@@ -57,10 +56,7 @@ export function GlobalNav({state, setState}: {state: Web3State, setState: React.
       </button>
 
       <div
-        className={clsx('overflow-y-auto lg:static lg:block', {
-          'fixed inset-x-0 bottom-0 top-14 mt-px bg-black': isOpen,
-          hidden: !isOpen,
-        })}
+        className={`overflow-y-auto lg:static lg:block ${isOpen ? "fixed inset-x-0 bottom-0 top-14 mt-px bg-black" : ""} ${!isOpen ? "hidden" : ""}`}
       >
         <nav className="space-y-3 px-2 py-3">
           <div>
@@ -118,13 +114,7 @@ function NavItem({
         close();
       }}
       href=""
-      className={clsx(
-        'block font-semibold rounded-md px-3 py-2 text-sm font-medium hover:text-gray-300',
-        {
-          'text-gray-400 hover:bg-gray-800': !isActive,
-          'text-white': isActive,
-        },
-      )}
+      className={`block font-semibold rounded-md px-3 py-2 text-sm font-medium hover:text-gray-300 ${isActive ? "text-white" : "text-gray-400 hover:bg-gray-800"}`}
     >
       {label}
     </Link>

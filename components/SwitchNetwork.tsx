@@ -10,10 +10,10 @@ export const SwitchNetwork: React.VFC<ContractProps> = ({state}) => {
   const { open, close } = useWeb3Modal()
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col ">
       <Text variant="h2">Connecting to Goerli</Text>
-      <div className="mt-2 flex flex-col items-start justify-between">
-        <Text>
+      <div className="mt-2 items-start justify-between">
+        <Text className="my-6">
           This faucet uses the Ethereum test network called Goerli. You must
           set your wallet to use this network before you can mint NFTs.
         </Text>
