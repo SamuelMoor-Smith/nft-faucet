@@ -28,7 +28,7 @@ export class ContractManager {
       | undefined
   ) {
     this.contract = new web3.eth.Contract(
-      contractABI,
+      contractABI as any,
       contractAddr
     );
     this.chain = chain;
