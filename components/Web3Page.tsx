@@ -14,7 +14,7 @@ import { goerli } from "wagmi/chains";
 
 import { useAccount } from "wagmi";
 import { useNetwork } from "wagmi";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ContractManager } from "../utils/contractManager";
 
 const chains = [goerli];
@@ -44,17 +44,14 @@ export interface ContractProps {
 export interface Web3PageProps {
   state: Web3State;
   setState: React.Dispatch<React.SetStateAction<Web3State>>;
-  mode?: string;
+  contractManager?: ContractManager | null,
+  setContractManager?: Dispatch<SetStateAction<ContractManager | null>>
 }
 
-export const Web3Page: React.VFC<Web3PageProps> = ({ state, setState }) => {
+export const Web3Page: React.VFC<Web3PageProps> = ({ state, setState, contractManager, setContractManager }) => {
   const { address, isConnecting, isDisconnected } = useAccount();
   const { chain, chains } = useNetwork();
   const [loadingTokens, setLoadingTokens] = useState(true);
-
-  // Initialize contractManager as a state variable to persist it across re-renders
-  const [contractManager, setContractManager] =
-    useState<ContractManager | null>(null);
 
     useEffect(() => {
       console.log(contractManager)
@@ -68,7 +65,7 @@ export const Web3Page: React.VFC<Web3PageProps> = ({ state, setState }) => {
         // Initialize ContractManager
         console.log("creating contract manager", chain)
         const cm = new ContractManager(setLoadingTokens, chain);
-        setContractManager(cm); // Save ContractManager instance to state
+        setContractManager!(cm); // Save ContractManager instance to state
       } else if (
         contractManager &&
         (isDisconnected || (chain && chain.unsupported))
@@ -76,7 +73,7 @@ export const Web3Page: React.VFC<Web3PageProps> = ({ state, setState }) => {
         // Wallet is disconnected or we are on the wrong network
         // Handle the disconnection or wrong network here
         // For example, you could clear the contractManager state
-        setContractManager(null);
+        setContractManager!(null);
       }
     }, [address, isConnecting, isDisconnected, chain, chains]); // This hook will run every time the address, isConnecting, isDisconnected, chain, or chains change
     

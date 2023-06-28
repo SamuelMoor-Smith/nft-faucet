@@ -1,10 +1,13 @@
 import { Layout, Text, Page } from '@vercel/examples-ui'
 import { Web3Page, Web3PageProps } from '../components/Web3Page'
 import { GlobalNav } from '../components/nav/global-nav'
+import { ContractManager } from '../utils/contractManager';
+import { useState } from 'react';
 
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
-export const Home: React.VFC<Web3PageProps> = ({ state, setState }) => {
+export const Home: React.VFC<Web3PageProps> = ({ state, setState, contractManager, setContractManager }) => {
+    
   return (
     <Page>
       {/* <GlobalNav state={state} setState={setState} /> */}
@@ -18,7 +21,7 @@ export const Home: React.VFC<Web3PageProps> = ({ state, setState }) => {
       <hr className="border-t border-accents-2 my-2 ml-48" />
 
       <section className="flex flex-col ml-48">
-        <Web3Page state={state} setState={setState} />
+        <Web3Page state={state} setState={setState} contractManager={contractManager} setContractManager={setContractManager}/>
       </section>
     </Page>
   )

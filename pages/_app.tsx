@@ -11,11 +11,16 @@ import Web3 from 'web3';
 import { useState } from 'react'
 import { Web3State } from '../components/Web3Page'
 import { ChakraProvider } from '@chakra-ui/react'
+import { ContractManager } from '../utils/contractManager'
 export const web3 = new Web3(Web3.givenProvider);
 
 function App({ Component, pageProps }: AppProps) {
 
   const [state, setState] = useState<Web3State>(Web3State.Loading)
+
+  // Initialize contractManager as a state variable to persist it across re-renders
+  const [contractManager, setContractManager] =
+    useState<ContractManager | null>(null);
 
   // useEffect(() => {
   //   const initializeState = async () => {
@@ -27,8 +32,8 @@ function App({ Component, pageProps }: AppProps) {
 
   return (
     <ChakraProvider>
-      <GlobalNav state={state} setState={setState} />
-      <Home state={state} setState={setState}/>
+      <GlobalNav state={state} setState={setState} contractManager={contractManager} setContractManager={setContractManager} />
+      <Home state={state} setState={setState} contractManager={contractManager} setContractManager={setContractManager} />
     </ChakraProvider>
   )
 }

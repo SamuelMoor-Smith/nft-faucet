@@ -6,26 +6,42 @@ import { NextLogo } from './next-logo';
 import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/20/solid';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import Byline from './byline';
 import { Web3State } from '../Web3Page';
 
 import { Web3Button, useWeb3Modal } from '@web3modal/react'
 import { Button } from '@vercel/examples-ui';
 import { WalletButton } from '../WalletButton';
+import { Chain, useAccount, useNetwork } from 'wagmi';
+import { ContractManager } from '../../utils/contractManager';
 
-export function GlobalNav({state, setState}: {state: Web3State, setState: React.Dispatch<React.SetStateAction<Web3State>>}) {
+export interface Web3PageProps {
+  state: Web3State;
+  setState: React.Dispatch<React.SetStateAction<Web3State>>;
+  contractManager?: ContractManager | null,
+  setContractManager?: Dispatch<SetStateAction<ContractManager | null>>
+}
+
+export const GlobalNav: React.VFC<Web3PageProps> = ({ state, setState, contractManager, setContractManager }) => {
   const [isOpen, setIsOpen] = useState(false);
   const close = () => setIsOpen(false);
 
-  const { open } = useWeb3Modal()
+  const { address } = useAccount();
+  const { chain } = useNetwork();
 
   return (
     <div className="fixed top-0 z-10 flex w-full flex-col border-b border-gray-800 bg-black lg:bottom-0 lg:z-auto lg:w-72 lg:border-b-0 lg:border-r lg:border-gray-800">
       <div className="flex h-14 items-center py-4 px-4 lg:h-auto">
         <Link
           onClick={() => {
-            setState(Web3State.MintNFTs);
+            if (address == null || address == undefined) {
+              setState(Web3State.WalletNotConnected);
+            } else if (!chain || chain!.unsupported || !contractManager) {
+              setState(Web3State.WrongNetwork);
+            } else {
+              setState(Web3State.MintNFTs);
+            }
             close();
           }}
           href=""
@@ -70,6 +86,9 @@ export function GlobalNav({state, setState}: {state: Web3State, setState: React.
                     desiredState={Web3State.MintNFTs}
                     setState={setState}
                     label="Mint NFTs"
+                    address={address}
+                    chain={chain}
+                    contractManager={contractManager}
                   />
                   <NavItem
                     close={close}
@@ -77,6 +96,9 @@ export function GlobalNav({state, setState}: {state: Web3State, setState: React.
                     desiredState={Web3State.ViewNFTs}
                     setState={setState}
                     label="View NFTs"
+                    address={address}
+                    chain={chain}
+                    contractManager={contractManager}
                   />
               </div>
           </div>
@@ -97,20 +119,34 @@ function NavItem({
   currentState,
   desiredState,
   setState,
-  label
+  label,
+  address,
+  chain,
+  contractManager
 }: {
   close: () => false | void;
   currentState: Web3State;
   desiredState: Web3State;
   setState: React.Dispatch<React.SetStateAction<Web3State>>;
   label: string;
+  address: string | undefined;
+  chain: (Chain & {
+    unsupported?: boolean | undefined;
+}) | undefined;
+  contractManager: ContractManager | null | undefined
 }) {
   const isActive = currentState === desiredState;
 
   return (
     <Link
       onClick={() => {
-        setState(desiredState);
+        if (address == null || address == undefined) {
+          setState(Web3State.WalletNotConnected);
+        } else if (!chain || chain!.unsupported || !contractManager) {
+          setState(Web3State.WrongNetwork);
+        } else {
+          setState(desiredState);
+        }
         close();
       }}
       href=""
