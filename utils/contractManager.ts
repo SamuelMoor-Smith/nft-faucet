@@ -1,7 +1,7 @@
 import { web3 } from "../pages/_app";
 import { contractAddr } from "./constants";
-import { AbiItem } from "web3-utils";
 import contractABI from "../contracts/contractABI.json";
+import {Modules } from 'web3'
 import Web3 from "web3";
 import { Dispatch, SetStateAction } from "react";
 import { Chain, useNetwork } from "wagmi";
@@ -28,7 +28,7 @@ export class ContractManager {
       | undefined
   ) {
     this.contract = new web3.eth.Contract(
-      contractABI as AbiItem[],
+      contractABI,
       contractAddr
     );
     this.chain = chain;
