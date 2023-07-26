@@ -1,5 +1,5 @@
 import { web3 } from "../pages/_app";
-import { contractAddr, COVALENT_API_KEY, COVALENT_API_URL, CHAIN_ID } from "./constants";
+import { contractAddr } from "./constants";
 import contractABI from "../contracts/contractABI.json";
 import {Modules } from 'web3'
 import Web3 from "web3";
@@ -42,43 +42,29 @@ export class ContractManager {
 
   async setAllTokens() {
     this.setLoadingTokens(true);
-  
+
     console.log(this.chain, !this.chain?.unsupported)
-  
+
     if (this.chain && !this.chain?.unsupported) {
+
       try {
         console.log("loading")
-  
-        // Call the AWS Lambda function and get the response
-        const response = await fetch('https://pyoxnv6yca.execute-api.us-east-2.amazonaws.com/loadTokens');
-  
-        console.log(response)
-        // If the response was not ok, throw an error
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        await this.setTokenCount();
+
+        for (let tokenId = 0; tokenId < Number(this.tokenCount); tokenId++) {
+          let tokenURI = await this.contract.methods.tokenURI(tokenId).call();
+          let owner = await this.contract.methods.ownerOf(tokenId).call();
+
+          const token: Token = { id: tokenId, owner: owner, svg: tokenURI };
+          this.allTokens.set(tokenId, token);
         }
 
-        console.log("response ok")
-  
-        // Get the data from the response
-        const data = await response.json();
-
-        console.log(data)
-  
-        // If there is an error in the data, throw it
-        if (data.error) {
-          throw new Error(data.error);
-        }
-  
-        // Set the tokens
-        this.allTokens = new Map(data.tokens.map((token: { id: any; }) => [token.id, token]));
-  
         this.setLoadingTokens(false);
       } catch (error) {
         alert(`Error retrieving tokens: ${error}`);
       }
     }
-  }  
+  }
 
   async handleMint(numTokens: any, setNumTokens: any) {
     try {
